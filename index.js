@@ -1,13 +1,12 @@
 import express from 'express';
 import puppeteer from 'puppeteer';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+// Identifiants Aternos (compte public sans permission)
+const USERNAME = 'ton_identifiant_public';
+const PASSWORD = 'ton_mot_de_passe_public';
 
 app.post('/start-server', async (req, res) => {
   try {
@@ -17,19 +16,14 @@ app.post('/start-server', async (req, res) => {
     });
     const page = await browser.newPage();
 
-    const USERNAME = process.env.USERNAME;
-    const PASSWORD = process.env.PASSWORD;
-
     await page.goto('https://aternos.org/go/', { waitUntil: 'networkidle2' });
 
-    // Connexion
     await page.goto('https://aternos.org/servers/', { waitUntil: 'networkidle2' });
     await page.type('#user', USERNAME);
     await page.type('#password', PASSWORD);
     await page.click('#login');
     await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
-    // Démarrage du serveur
     await page.goto('https://aternos.org/server/', { waitUntil: 'networkidle2' });
     await page.waitForSelector('.server-status');
     const status = await page.$eval('.server-status', el => el.textContent.trim());
