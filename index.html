@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Lancer le serveur Minecraft</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      text-align: center;
+      padding-top: 100px;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 15px 30px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #status {
+      margin-top: 30px;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lancer le serveur Minecraft Aternos</h1>
+  <button onclick="startServer()">Démarrer le serveur</button>
+  <div id="status"></div>
+
+  <script>
+    async function startServer() {
+      document.getElementById("status").innerText = "Tentative de démarrage du serveur...";
+      try {
+        const response = await fetch("https://TON-SOUS-DOMAINE.up.railway.app/start-server", {
+          method: "POST"
+        });
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById("status").innerText = "✅ Serveur lancé avec succès !";
+        } else {
+          document.getElementById("status").innerText = "❌ Échec : " + result.message;
+        }
+      } catch (error) {
+        document.getElementById("status").innerText = "❌ Erreur de connexion.";
+      }
+    }
+  </script>
+</body>
+</html>
