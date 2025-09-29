@@ -1,46 +1,29 @@
-import express from 'express';
-import puppeteer from 'puppeteer';
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Lancer le serveur Minecraft</title>
+</head>
+<body>
+  <h1>Lancer le serveur Minecraft Aternos</h1>
+  <button onclick="startServer()">Démarrer le serveur</button>
+  <div id="status"></div>
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Identifiants Aternos (compte public sans permission)
-const USERNAME = 'ton_identifiant_public';
-const PASSWORD = 'ton_mot_de_passe_public';
-
-app.post('/start-server', async (req, res) => {
-  try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await browser.newPage();
-
-    await page.goto('https://aternos.org/go/', { waitUntil: 'networkidle2' });
-
-    await page.goto('https://aternos.org/servers/', { waitUntil: 'networkidle2' });
-    await page.type('#user', USERNAME);
-    await page.type('#password', PASSWORD);
-    await page.click('#login');
-    await page.waitForNavigation({ waitUntil: 'networkidle2' });
-
-    await page.goto('https://aternos.org/server/', { waitUntil: 'networkidle2' });
-    await page.waitForSelector('.server-status');
-    const status = await page.$eval('.server-status', el => el.textContent.trim());
-
-    if (status === 'Offline') {
-      await page.click('#start');
-      await page.waitForSelector('.server-status', { timeout: 15000 });
+  <script>
+    async function startServer() {
+      document.getElementById("status").innerText = "Démarrage en cours...";
+      try {
+        const response = await fetch("https://aternos-launcher-backend.up.railway.app/start-server", {
+          method: "POST"
+        });
+        const result = await response.json();
+        document.getElementById("status").innerText = result.success
+          ? "✅ Serveur lancé !"
+          : "❌ Échec : " + result.message;
+      } catch {
+        document.getElementById("status").innerText = "❌ Erreur de connexion.";
+      }
     }
-
-    await browser.close();
-    res.json({ success: true, message: 'Serveur lancé avec succès.' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Erreur lors du démarrage du serveur.' });
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`Serveur backend lancé sur le port ${PORT}`);
-});
+  </script>
+</body>
+</html>
