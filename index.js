@@ -1,5 +1,8 @@
 import express from 'express';
 import puppeteer from 'puppeteer';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,9 +17,8 @@ app.post('/start-server', async (req, res) => {
     });
     const page = await browser.newPage();
 
-    // Remplace par tes identifiants Aternos
-    const USERNAME = 'ton_identifiant_aternos';
-    const PASSWORD = 'ton_mot_de_passe_aternos';
+    const USERNAME = process.env.USERNAME;
+    const PASSWORD = process.env.PASSWORD;
 
     await page.goto('https://aternos.org/go/', { waitUntil: 'networkidle2' });
 
